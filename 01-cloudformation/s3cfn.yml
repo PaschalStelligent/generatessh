@@ -3,9 +3,22 @@ Parameters:
   S3BucketName:
     Description: Bucket name
     Type: String
+    
+Conditions:
+  InDefaultRegion: !Equals [!Ref AWS::Region, us-east-1]
+  
+    
 Resources:
   s3Bucket:
     Type: AWS::S3::Bucket
     Properties:
       BucketName:
-        !Ref S3BucketName
+        !Join
+        - ''
+        - - !If [InDefaultRegion,!Ref AWS::AccountId, !Ref AWS::Region]
+          - !Ref S3BucketName
+       
+      Tags:
+              - Key: "Name"
+                Value: !Sub '${S3BucketName}${AWS::AccountId}'
+   DeletionPolicy: Retain
