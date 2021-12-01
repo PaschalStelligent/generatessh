@@ -176,7 +176,6 @@ See [DeletionPolicy](https://aws.amazon.com/premiumsupport/knowledge-center/clou
 3.Assign a stack policy to prevent updates to stack resources.
 4.Enable termination protection to prevent users from deleting the stack from the AWS CloudFormation console or AWS Command Line Interface (AWS CLI).
 
-
 _How is that different from applying Termination Protection?_
 
 #### Task: String Substitution
