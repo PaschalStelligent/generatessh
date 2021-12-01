@@ -160,10 +160,10 @@ name.
 
 _Why do we prefer the YAML format for CFN templates?_
 
-Simple to write.
-Supports key/values pairs that is easy to read
-Supports Nested objects, multi line strings, and Arrays
-Easier to add comments
+## Simple to write.
+## Supports key/values pairs that is easy to read
+## Supports Nested objects, multi line strings, and Arrays
+## Easier to add comments
 
 #### Question: Protecting Resources
 
@@ -171,10 +171,10 @@ _What else can you do to prevent resources in a stack from being deleted?_
 
 See [DeletionPolicy](https://aws.amazon.com/premiumsupport/knowledge-center/cloudformation-accidental-updates/).
 
-Set the DeletionPolicy attribute 
-Use AWS Identity and Access Management (IAM) policies 
-Assign a stack policy to prevent updates to stack resources.
-Enable termination protection to prevent users from deleting the stack.
+## Set the DeletionPolicy attribute 
+## Use AWS Identity and Access Management (IAM) policies 
+## Assign a stack policy to prevent updates to stack resources.
+## Enable termination protection to prevent users from deleting the stack.
 
 _How is that different from applying Termination Protection?_
 
