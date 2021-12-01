@@ -171,7 +171,7 @@ _What else can you do to prevent resources in a stack from being deleted?_
 
 See [DeletionPolicy](https://aws.amazon.com/premiumsupport/knowledge-center/cloudformation-accidental-updates/).
 
-_Set the DeletionPolicy attribute_ 
+_Set the DeletionPolicy attribute_
 _Use AWS Identity and Access Management (IAM) policies_
 _Assign a stack policy to prevent updates to stack resources_
 _Enable termination protection to prevent users from deleting the stack_

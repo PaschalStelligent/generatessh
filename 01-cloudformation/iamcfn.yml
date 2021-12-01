@@ -18,9 +18,3 @@ Resources:
             Action:
               - "s3:Get*"
             Resource: "*"
-Outputs:
-  OutputForIamPolicyArn:
-    Description: "Export cfn"
-    Value: !Ref iamPolicy
-    Export:
-      Name: "paschal-012-IamPolicyArn"
