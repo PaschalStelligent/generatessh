@@ -21,4 +21,3 @@ Resources:
       Tags:
               - Key: "Name"
                 Value: !Sub '${S3BucketName}${AWS::AccountId}'
-   DeletionPolicy: Retain
