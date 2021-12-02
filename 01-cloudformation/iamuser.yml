@@ -1,0 +1,8 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Resources:
+  iamUser2:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: myUserr
+      ManagedPolicyArns:
+        - !ImportValue "paschal-012-IamPolicyArns"

@@ -1,26 +1,27 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Resources:
+Parameters:
   iamUser:
-    Type: AWS::IAM::User
-    Properties:
-      UserName: myUser
+    Description: IAM UserName
+    Type: String
 
+
+Resources:
   iamPolicy:
-    Type: AWS::IAM::Policy
+    Type: 'AWS::IAM::ManagedPolicy'
     Properties:
-      PolicyName: paschal-012-iampolicy
-      Users:
-       - !Ref iamUser
+      ManagedPolicyName: paschal-012-iampolicy
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Action:
               - "s3:Get*"
+              - "s3:List*"
             Resource: "*"
-Outputs:
-  OutputForIamPolicyArn:
-    Description: "Export cfn"
-    Value: !Ref iamPolicy
-    Export:
-      Name: "paschal-012-IamPolicyArn"
+  
+  iamUserName:
+    Type: 'AWS::IAM::User'
+    Properties:
+      UserName: !Ref iamUser
+      ManagedPolicyArns: 
+        - !Ref 'iamPolicy'
