@@ -1,0 +1,9 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Resources:
+  iamUser:
+    Type: 'AWS::IAM::User'
+    Properties:
+      UserName: myUserr
+      ManagedPolicyArns:
+        - !ImportValue "Paschal-Onor-Policy"
