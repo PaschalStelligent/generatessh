@@ -1,0 +1,66 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Parameters:
+  BucketName:
+    Description: Bucket Name
+    Type: String
+  iamUser:
+    Description: IAM UserName
+    Type: String
+Resources:
+  SampleBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      # Bucket: !Sub "arn:aws:s3:::${BucketName}"
+      Bucket: !Ref BucketName
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS:
+              - !Sub "arn:aws:iam::${AWS::AccountId}:user/${iamUser}"
+            Action: s3:*
+            Resource:
+            - !Sub "arn:aws:s3:::stelligent-u-${iamUser}"
+            - !Sub "arn:aws:s3:::stelligent-u-${iamUser}/*"
+          - Effect: Allow
+            Principal: "*"
+            Action:
+            - s3:GetObject
+            - s3:GetObjectVersion
+            Resource:
+              - !Sub "arn:aws:s3:::stelligent-u-${iamUser}/private/*"
+          - Effect: Deny
+            NotPrincipal:
+              AWS:
+              - !Sub "arn:aws:iam::${AWS::AccountId}:user/${iamUser}"
+              - !Sub "arn:aws:iam::${AWS::AccountId}:root"
+            NotAction:
+            - s3:GetObject
+            - s3:GetObjectVersion
+            Resource: !Sub "arn:aws:s3:::stelligent-u-${iamUser}/private/private.txt"
+
+    #     Statement:
+    #         - Effect: Allow
+    #           Principal: "*"
+    #           Action:
+    #             - "s3:GetObject"
+    #             - "s3:GetObjectVersion"
+    #           Resource: !Sub "arn:aws:s3:::${BucketName}/private/*"
+    #         - Effect: Allow
+    #           Principal: !Sub "arn:aws:iam::${AWS::AccountId}:${iamUser}"
+    #           Action:
+    #             - "s3:*"
+    #           Resource: 
+    #             - !Sub "arn:aws:s3:::${BucketName}"
+    #             - !Sub "arn:aws:s3:::${BucketName}/*"
+    #         - Effect: Deny
+    #           NotPrincipal: 
+    #             #AWS:
+    #             - !Sub "arn:aws:iam::${AWS::AccountId}:${iamUser}"
+    #             - !Sub "arn:aws:iam::${AWS::AccountId}:root"
+    #           NotAction:
+    #             - "s3:GetObject"
+    #             - "s3:GetObjectVersion"
+    #           Resource: 
+    #             - !Sub "arn:aws:s3:::${BucketName}/private/private.txt"

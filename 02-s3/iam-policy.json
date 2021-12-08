@@ -1,0 +1,41 @@
+{
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": [
+          "arn:aws:iam::324320755747:user/paschal.onor.labs"
+        ]
+      },
+      "Action": "s3:*",
+      "Resource": [
+        "arn:aws:s3:::stelligent-u-paschal.onor.labs",
+        "arn:aws:s3:::stelligent-u-paschal.onor.labs/*"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": [
+        "s3:GetObject",
+        "s3:GetObjectVersion"
+      ],
+      "Resource": "arn:aws:s3:::stelligent-u-paschal.onor.labs/private/*"
+    },
+    {
+      "Effect": "Deny",
+      "NotPrincipal": {
+        "AWS": [
+          "arn:aws:iam::324320755747:user/paschal.onor.labs",
+          "arn:aws:iam::324320755747:root"
+        ]
+      },
+      "NotAction": [
+        "s3:GetObject",
+        "s3:GetObjectVersion"
+      ],
+      "Resource": "arn:aws:s3:::stelligent-u-paschal.onor.labs/private/private.txt"
+    }
+  ]
+}
+

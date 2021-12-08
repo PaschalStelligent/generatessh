@@ -1,0 +1,10 @@
+[
+    {
+      "ParameterKey": "BucketName",
+      "ParameterValue": "stelligent-u-paschal.onor.labs"
+    },
+    {
+      "ParameterKey": "iamUser",
+      "ParameterValue": "paschal.onor.labs"
+    }
+]

@@ -1,0 +1,10 @@
+# aws cloudformation create-stack --stack-name Paschal-Onor1 --template-body file://$WDIR/s3bucketpolicy.yml --parameters file://$WDIR/s3parameter.json --region us-east-1 --profile labs-mfa
+
+# aws cloudformation delete-stack --stack-name Paschal-Onor1 --region us-east-1 --profile labs-mfa
+
+# aws s3api delete-bucket-policy --bucket stelligent-u-paschal.onor.labs --profile labs-mfa
+
+# aws s3api put-bucket-policy --bucket stelligent-u-paschal.onor.labs --policy file://iam-policy.json --profile labs-mfa
+
+# export WDIR=$(PWD)
+
