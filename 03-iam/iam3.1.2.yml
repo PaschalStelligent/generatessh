@@ -25,3 +25,10 @@ Resources:
       UserName: !Ref iamUser
       ManagedPolicyArns: 
         - !Ref 'iamPolicy'
+        
+Outputs:
+  OutputForIamPolicyArn:
+    Description: "Export cfn"
+    Value: !Ref iamPolicy
+    Export:
+      Name: !Sub "${AWS::StackName}-Policy"

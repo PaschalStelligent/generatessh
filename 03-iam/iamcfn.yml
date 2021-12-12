@@ -18,7 +18,7 @@ Resources:
                 - !Sub "arn:aws:iam::${AWS::AccountId}:user/${iamUser}"
             Action:
               - 'sts:AssumeRole'
-      Path: /
+      Path: "/"
       Policies:
         - PolicyName: iamViewPolicy
           PolicyDocument:
@@ -29,7 +29,9 @@ Resources:
                   - 'iam:List*'
                   - 'iam:Get*'
                   - 'iam:Generate*'
-                Resource: '*'
+                # Resource: '*'
+                Resource:
+                  - !Sub "arn:aws:iam::${AWS::AccountId}:user/${iamUser}"
           # Users:
           #   - !Sub "arn:aws:iam::${AWS::AccountId}:user/${iamUser}"     
   # RootInstanceProfile:
