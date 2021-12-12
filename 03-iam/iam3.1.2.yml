@@ -1,0 +1,27 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Parameters:
+  iamUser:
+    Description: IAM UserName
+    Type: String
+
+
+Resources:
+  iamPolicy:
+    Type: 'AWS::IAM::ManagedPolicy'
+    Properties:
+      ManagedPolicyName: paschal-012-iampolicy
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - "iam:Get*"
+              - "iam:List*"
+            Resource: "*"
+  
+  iamUserName:
+    Type: 'AWS::IAM::User'
+    Properties:
+      UserName: !Ref iamUser
+      ManagedPolicyArns: 
+        - !Ref 'iamPolicy'
