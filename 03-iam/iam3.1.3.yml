@@ -1,0 +1,63 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Parameters:
+  Password:
+    NoEcho: 'true'
+    Type: String
+    Description: New account password
+    MinLength: '1'
+    MaxLength: '41'
+    ConstraintDescription: the password must be between 1 and 41 characters
+
+Resources:
+  CFNUser:
+    Type: 'AWS::IAM::User'
+    Properties:
+      LoginProfile:
+        Password: !Ref 'Password'
+      UserName: "Paschal"
+
+  CFNUserPolicies:
+    Type: "AWS::IAM::ManagedPolicy"
+    Properties:
+      ManagedPolicyName: "CFNUsers"
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+        - Effect: Allow
+          Action: ['iam:List*', 'iam:Get*', 'iam:Generate*']
+          Resource: '*'
+      Users:
+        - !Ref CFNUser
+
+  CFNUserRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: 
+              Service:
+                - "iam.amazonaws.com"
+            Action:
+              - 'sts:AssumeRole'
+      Path: "/"
+      ManagedPolicyArns: 
+        - !Ref "CFNUserPolicies"
+  
+  Ec2Role: 
+    Type: "AWS::IAM::Role"
+    Properties: 
+      AssumeRolePolicyDocument: 
+        Version: "2012-10-17"
+        Statement: 
+          - 
+            Effect: "Allow"
+            Principal: 
+              Service: 
+                - "ec2.amazonaws.com"
+            Action:
+              - 'sts:AssumeRole'
+      Path: "/"
+      ManagedPolicyArns: 
+        - !Ref "CFNUserPolicies"
