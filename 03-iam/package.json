@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "cfn-tail": "^1.7.0"
+  }
+}

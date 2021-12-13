@@ -28,7 +28,8 @@ Resources:
           Resource: '*'
       Users:
         - !Ref CFNUser
-
+    # DependsOn:
+    #   - CFNUsers
   CFNUserRole:
     Type: 'AWS::IAM::Role'
     Properties:
@@ -44,7 +45,8 @@ Resources:
       Path: "/"
       ManagedPolicyArns: 
         - !Ref "CFNUserPolicies"
-  
+    # DependsOn:
+    #   - CFNUsersPolicies 
   Ec2Role: 
     Type: "AWS::IAM::Role"
     Properties: 
@@ -61,3 +63,5 @@ Resources:
       Path: "/"
       ManagedPolicyArns: 
         - !Ref "CFNUserPolicies"
+    # DependsOn:
+    #   - CFNUsers
