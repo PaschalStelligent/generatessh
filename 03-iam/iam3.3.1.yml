@@ -1,0 +1,98 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Parameters:
+  Bucket1:
+    Description: Bucket Name
+    Type: String
+  Bucket2:
+    Description: Bucket Name
+    Type: String
+Resources:
+  CFNRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - s3.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: 's3:*'
+                Resource: '*'
+
+
+  s3Bucket1:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref Bucket1
+
+  s3Bucket2:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref Bucket2
+
+
+# AWSTemplateFormatVersion: "2010-09-09"
+# Parameters:
+#   Password:
+#     NoEcho: 'true'
+#     Type: String
+#     Description: New account password
+#     MinLength: '1'
+#     MaxLength: '41'
+#     ConstraintDescription: the password must be between 1 and 41 characters
+#   BucketName1:
+#     Description: Bucket Name
+#     Type: String
+# Resources:
+#   CFNUser:
+#     Type: AWS::IAM::User
+#     Properties:
+#       LoginProfile:
+#         Password: !Ref 'Password'
+#       UserName: "Paschal"
+#   CFNUserRole:
+#     Type: 'AWS::IAM::Role'
+#     Properties:
+#       AssumeRolePolicyDocument:
+#         Version: "2012-10-17"
+#         Statement:
+#           - Effect: Allow
+#             Principal: 
+#               AWS: !Sub "arn:aws:iam::${AWS::AccountId}:user/${CFNUser}"
+#             Action:
+#               - 'sts:AssumeRole'
+#       Path: "/"
+
+#   CFNUserPolicies:
+#     Type: "AWS::S3::BucketPolicy"
+#     Properties:
+#       Bucket: !Ref BucketName1
+#       PolicyDocument:
+#         Version: "2012-10-17"
+#         Statement:
+#           - Effect: Allow
+#             Principal: "*"
+#               # AWS:
+#               # - !Sub "arn:aws:s3::${AWS::AccountId}:user/${CFNUser}"
+#             Action: s3:*
+#             Resource:
+#             - !Sub "arn:aws:s3:::stelligent-u-${CFNUser}"
+#             - !Sub "arn:aws:s3:::stelligent-u-${CFNUser}/*"
+#   BucketNew:
+#     Type: "AWS::S3::Bucket"
+#     Properties:
+#       BucketName: !Ref "BucketName1"
+
+      # Users:
+      #   - !Ref CFNUser
+#stelligent-u-paschal.onor.labs

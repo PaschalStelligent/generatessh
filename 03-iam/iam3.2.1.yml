@@ -25,6 +25,9 @@ Resources:
               AWS: !Sub "arn:aws:iam::${AWS::AccountId}:user/${CFNUser}"
             Action:
               - 'sts:AssumeRole'
+            Condition:
+              StringLike:
+                sts:RoleSessionName: "Paschal"
       Path: "/"
       ManagedPolicyArns: 
         - arn:aws:iam::aws:policy/IAMReadOnlyAccess

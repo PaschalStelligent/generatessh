@@ -1,0 +1,49 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Parameters:
+  Bucket1:
+    Description: Bucket Name
+    Type: String
+  Bucket2:
+    Description: Bucket Name
+    Type: String
+Resources:
+  CFNRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - s3.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: 's3:*'
+                Resource: '*'
+              - Effect: Deny
+                Action: s3:*
+                Resource:
+                - arn:aws:s3:::paschal1234/*
+                - arn:aws:s3:::paschal1234
+                - arn:aws:s3:::stelligent121/*
+                - arn:aws:s3:::stelligent121
+
+
+
+  s3Bucket1:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref Bucket1
+
+  s3Bucket2:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref Bucket2
