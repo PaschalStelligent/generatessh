@@ -45,3 +45,13 @@ aws cloudformation update-stack --stack-name Paschal-Onor2 --template-body file:
 
 # tail cfn stage
 cfn-tail --region us-east-1 Paschal-Onor2
+
+#3.1.6
+aws cloudformation delete-stack --stack-name Paschal-Onor2 --region us-east-1 --profile labs-mfa
+
+#3.2.1
+aws cloudformation create-stack --stack-name Paschal-Onor --template-body file://$WDIR/iam3.2.1.yml --parameters file://$WDIR/iamparameter.json --region us-east-1 --profile labs-mfa --capabilities CAPABILITY_NAMED_IAM 
+# Output 3.2.1
+{
+    "StackId": "arn:aws:cloudformation:us-east-1:324320755747:stack/Paschal-Onor/c47c4b70-5c72-11ec-88b8-0e7689609ebf"
+}
