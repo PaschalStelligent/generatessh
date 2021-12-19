@@ -1,0 +1,81 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Parameters:
+  VpcCidr:
+    Description: Please enter the IP Range (CIDR Notation) for this private subnet
+    Type: String
+  PrivateSubnetCidr:
+    Default: 10.0.0.0/24
+    Description: Please enter the IP Range (CIDR Notation) for this private subnet
+    Type: String
+
+Resources:
+  PaschalVPC:
+    Type: AWS::EC2::VPC
+    Properties: 
+      CidrBlock: !Ref VpcCidr
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      InstanceTenancy: default
+      # Ipv4IpamPoolId: 
+      # Ipv4NetmaskLength: 
+      Tags: 
+        - Key: User
+          Value: paschal.onor.labs
+  myPrivateSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref PaschalVPC
+      CidrBlock: !Ref PrivateSubnetCidr
+      AvailabilityZone: !Select [0, !GetAZs '' ]
+      MapPublicIpOnLaunch: false
+      Tags:
+      - Key: User
+        Value: paschal.onor.labs Private Subnet 1
+
+  myInternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties: 
+      Tags: 
+        - Key: User
+          Value: paschal.onor.labs Test IGW
+
+  myInternetGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties: 
+      InternetGatewayId: !Ref myInternetGateway
+      VpcId: !Ref PaschalVPC
+
+  myPrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref PaschalVPC
+      Tags:
+      - Key: User
+        Value: paschal.onor.labs Private Route Table
+      
+  myPrivateRoute:
+    Type: AWS::EC2::Route
+    # DependsOn: !Ref myInternetGateway
+    Properties:
+       RouteTableId: !Ref myPrivateRouteTable
+       DestinationCidrBlock: 0.0.0.0/0
+       GatewayId: !Ref myInternetGateway
+  
+  myPrivateSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref myPrivateSubnet
+      RouteTableId: !Ref myPrivateRouteTable
+
+
+Outputs:
+  OutputForPaschalVPCId:
+    Description: "Paschal VPC"
+    Value: !Ref PaschalVPC
+    Export:
+      Name: !Sub "${AWS::StackName}-VPCID"
+  OutputFormyPrivateSubnetId:
+    Description: "my Private Subnet"
+    Value: !Ref myPrivateSubnet
+    Export:
+      Name: !Sub "${AWS::StackName}-PrivateSubnet"

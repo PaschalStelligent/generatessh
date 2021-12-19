@@ -1,0 +1,6 @@
+aws cloudformation create-stack --stack-name Paschal-Onor --template-body file://$WDIR/vpcc4.1.1.yml --parameters file://$WDIR/vpcparameters.json --region us-east-1 --profile labs-mfa
+cfn-tail --region us-east-1 Paschal-Onor
+aws cloudformation update-stack --stack-name Paschal-Onor --template-body file://$WDIR/vpcc4.1.2.yml --parameters file://$WDIR/vpcparameters.json --region us-east-1 --profile labs-mfa
+
+aws cloudformation create-stack --stack-name Paschal-Onor-Test --template-body file://$WDIR/VPCMain.yml  --region us-east-1 --profile labs-mfa
+aws cloudformation delete-stack --stack-name Paschal-Onor-Test --region us-east-1 --profile labs-mfa

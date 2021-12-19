@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Parameters:
+  LatestAMIID:
+    Description: Latest Amazon Machine Image ID
+    Type: AWS::EC2::Image::Id
+  EC2InstanceType:
+    Description: Type of Instance
+    Type: String 
+  KeyPair:
+    Description: Key Value Pair
+    Type: String #AWS::EC2::KeyPair::KeyName
+
+
+Resources:
+  MyEC2Instance: 
+    Type: AWS::EC2::Instance
+    Properties: 
+      ImageId: !Ref LatestAMIID
+      KeyName: !Ref KeyPair
+      InstanceType: !Ref EC2InstanceType
+      # SubnetId: 
+      #   !ImportValue "Paschal-Onor-PrivateSubnet"
+      NetworkInterfaces: 
+        - AssociatePublicIpAddress: "true"
+          DeviceIndex: "0"
+          GroupSet: #importing the vpc id
+            - !ImportValue "Paschal-Onor-VPCID"
+          SubnetId: 
+            !ImportValue "Paschal-Onor-PrivateSubnet"
+      Tags: #adding tags
+        - Key: User
+          Value: paschal.onor.labs
+
+
+Outputs: #Outputing the ID of the EC2 and it Public IP 
+  MyEC2Instance:
+    Description: The ID of the Instance
+    Value: !Ref MyEC2Instance
+    Export:
+      Name: !Sub "${AWS::StackName}-MyEC2Instance"
+
+  PublicIp:
+    Description: MyEC2Instance Public IP
+    Value: !GetAtt MyEC2Instance.PublicIp
+    Export:
+      Name: !Sub "${AWS::StackName}-PublicIp"
+

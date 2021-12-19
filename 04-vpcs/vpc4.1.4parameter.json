@@ -1,0 +1,15 @@
+[
+    {
+      "ParameterKey": "LatestAMIID",
+      "ParameterValue": "ami-061ac2e015473fbe2"
+    },
+    {
+        "ParameterKey": "EC2InstanceType",
+        "ParameterValue": "t2.micro"
+    },
+    {
+        "ParameterKey": "KeyPair",
+        "ParameterValue": "paschalonor"
+    }
+
+]

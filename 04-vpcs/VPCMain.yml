@@ -1,0 +1,230 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: This template creates a VPC and a private subnet
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - 
+        Label:
+          default: "VPC CIDR"
+        Parameters:
+          - VpcCidr
+
+      - 
+        Label:
+          default: "Subnet CIDR"
+        Parameters:
+          - PrivateSubnetCidr
+      - 
+        Label:
+          default: "SSH CIDR"
+        Parameters:
+          - SSHLocation
+    # ParameterLabels:
+    #   ParameterLabel
+
+
+
+Parameters:
+  VpcCidr:
+    Default: 10.0.0.0/16
+    Description: Please enter the IP Range (CIDR Notation) for this VPC
+    Type: String
+
+  PrivateSubnetCidr:
+    Default: 10.0.0.0/24
+    Description: Please enter the IP Range (CIDR Notation) for this private subnet
+    Type: String
+
+  SSHLocation:
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
+    ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
+    Default: 0.0.0.0/0
+    Description: The IP address range that can be used to access the web server using SSH.
+    MaxLength: '18'
+    MinLength: '9'
+    Type: String
+
+Resources:
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties: 
+      CidrBlock: !Ref VpcCidr
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      InstanceTenancy: default
+      # Ipv4IpamPoolId: 
+      # Ipv4NetmaskLength: 
+      Tags: 
+        - Key: User
+          Value: paschal.onor.labs
+
+  myInternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties: 
+      Tags: 
+        - Key: User
+          Value: Test IGW
+
+  myInternetGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties: 
+      InternetGatewayId: !Ref myInternetGateway
+      VpcId: !Ref VPC
+    
+  myPrivateSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Ref PrivateSubnetCidr
+      AvailabilityZone: !Select [0, !GetAZs '' ]
+      MapPublicIpOnLaunch: false
+      Tags:
+      - Key: User
+        Value: paschal.onor.labs Private Subnet 1
+
+  myPrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+      - Key: User
+        Value: paschal.onor.labs Private Route Table
+      
+  myPrivateRoute:
+    Type: AWS::EC2::Route
+    # DependsOn: !Ref 'myInternetGateway'
+    Properties:
+       RouteTableId: !Ref myPrivateRouteTable
+       DestinationCidrBlock: 0.0.0.0/0
+       GatewayId: !Ref myInternetGateway
+  
+  myPrivateSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref myPrivateSubnet
+      RouteTableId: !Ref myPrivateRouteTable
+
+  ALBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow http/https access on port 80/443
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 443
+        ToPort: 443
+        CidrIp: 0.0.0.0/0
+      Tags:
+      - Key: User
+        Value: paschal.onor.labs App Load Balancer Security Group
+
+  # InstanceSecurityGroup:
+  #   Type: AWS::EC2::SecurityGroup
+  #   Properties:
+  #     GroupDescription: Allow http/https access on port 80/443
+  #     VpcId: !Ref VPC
+  #     SecurityGroupIngress:
+  #     - IpProtocol: tcp
+  #       FromPort: 80
+  #       ToPort: 80
+  #       CidrIp: 0.0.0.0/0
+  #     - IpProtocol: tcp
+  #       FromPort: 443
+  #       ToPort: 443
+  #       CidrIp: 0.0.0.0/0
+  #     Tags:
+  #     - Key: User
+  #       Value: paschal.onor.labs App Load Balancer Security Group
+
+  SSHSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: SSH Security Group
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: !Ref SSHLocation
+      Tags:
+      - Key: User
+        Value: paschal.onor.labs SSH Security Group
+
+  EC2SSHSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: EC2 SSH Security Group Allows Internet Traffic from the Application Load Balancer and SSH Traffic from the SSH Security group
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        SourceSecurityGroupId: !Ref ALBSecurityGroup
+      - IpProtocol: tcp
+        FromPort: 443
+        ToPort: 443
+        SourceSecurityGroupId: !Ref ALBSecurityGroup
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        SourceSecurityGroupId: !Ref ALBSecurityGroup
+      Tags:
+      - Key: User
+        Value: paschal.onor.labs EC2 SSH Security Group
+
+  DataBaseSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Open Database for access Security Group 
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 3306
+        ToPort: 3306
+        SourceSecurityGroupId: !Ref EC2SSHSecurityGroup
+      Tags:
+      - Key: User
+        Value: paschal.onor.labs Database Security Group
+
+Outputs:
+  VPC:
+    Description: The ID of the VPC
+    Value: !Ref VPC
+    Export:
+      Name: !Sub "${AWS::StackName}-VPCID"
+
+  myPrivateSubnet:
+    Description: The Private ID 
+    Value: !Ref myPrivateSubnet
+    Export:
+      Name: !Sub "${AWS::StackName}-myPrivateSubnet"
+
+  ALBSecurityGroup:
+    Description: ALB Security Group 
+    Value: !Ref ALBSecurityGroup
+    Export:
+      Name: !Sub "${AWS::StackName}-ALBSecurityGroup"
+
+  SSHSecurityGroup:
+    Description: SSH Security Group 
+    Value: !Ref SSHSecurityGroup
+    Export:
+      Name: !Sub "${AWS::StackName}-SSHSecurityGroup"
+
+  EC2SSHSecurityGroup:
+    Description: EC2 Security Group 
+    Value: !Ref EC2SSHSecurityGroup
+    Export:
+      Name: !Sub "${AWS::StackName}-EC2SSHSecurityGroup"
+
+  DataBaseSecurityGroup:
+    Description: DataBaseSecurity Group 
+    Value: !Ref DataBaseSecurityGroup
+    Export:
+      Name: !Sub "${AWS::StackName}-DataBaseSecurityGroup"
