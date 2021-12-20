@@ -6,10 +6,5 @@
     {
         "ParameterKey": "EC2InstanceType",
         "ParameterValue": "t2.micro"
-    },
-    {
-        "ParameterKey": "KeyPair",
-        "ParameterValue": "paschalonor"
     }
-
 ]
