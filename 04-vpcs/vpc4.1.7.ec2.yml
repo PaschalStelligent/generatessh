@@ -1,0 +1,133 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Parameters:
+  LatestAMIID:
+    Description: Latest Amazon Machine Image ID
+    Type: AWS::EC2::Image::Id
+  EC2InstanceType:
+    Description: Type of Instance
+    Type: String 
+  KeyPair:
+    Description: Key Value Pair
+    Type: String
+    Default: "paschalonor"
+  SSHLocation:
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
+    ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
+    Default: 0.0.0.0/0
+    Description: The IP address range that can be used to access the web server using SSH.
+    MaxLength: '18'
+    MinLength: '9'
+    Type: String
+  PrivateSubnetCidr:
+    # Default: 10.0.0.0/24
+    Description: Please enter the IP Range (CIDR Notation) for this private subnet
+    Type: String
+
+Resources:
+  MyEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties: 
+      ImageId: !Ref LatestAMIID
+      KeyName: !Ref KeyPair
+      InstanceType: !Ref EC2InstanceType
+      SubnetId: 
+        !ImportValue Paschal-Onor-PrivateSubnet
+      Tags: #adding tags
+        - Key: User
+          Value: paschal.onor.labs
+      SecurityGroupIds:
+        - !Ref SSHSecurityGroup
+    DependsOn: SSHSecurityGroup
+
+  MyEIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      InstanceId: !Ref MyEC2Instance
+
+  SSHSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: SSH and icmp Security Group
+      VpcId: !ImportValue "Paschal-Onor-VPCID"
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: !Ref SSHLocation
+      - IpProtocol: icmp
+        FromPort: 8
+        ToPort: -1
+        CidrIp: !Ref SSHLocation
+      Tags:
+      - Key: User
+        Value: paschal.onor.labs SSH Security Group
+
+  NatGatewayEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties: 
+      ImageId: !Ref LatestAMIID
+      KeyName: !Ref KeyPair
+      InstanceType: !Ref EC2InstanceType
+      SubnetId: 
+        !Ref NatGateWaySubnet
+      Tags: #adding tags
+        - Key: User
+          Value: paschal.onor.labs
+      SecurityGroupIds:
+        - !Ref SSHSecurityGroup
+    DependsOn: SSHSecurityGroup
+
+  NatGateWaySubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !ImportValue "Paschal-Onor-VPCID"
+      CidrBlock: !Ref PrivateSubnetCidr
+      AvailabilityZone: !Select [0, !GetAZs '' ]
+      MapPublicIpOnLaunch: true
+      Tags:
+      - Key: User
+        Value: paschal.onor.labs NatGateWay Subnet 1
+
+
+  NatGateWayPrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !ImportValue "Paschal-Onor-VPCID"
+      Tags:
+      - Key: User
+        Value: paschal.onor.labs Private Route Table
+      
+  NatGateWayPrivateRoute:
+    Type: AWS::EC2::Route
+    Properties:
+       RouteTableId: !Ref NatGateWayPrivateRouteTable
+       DestinationCidrBlock: 0.0.0.0/0
+       NatGatewayId: !ImportValue "Paschal-Onor-NatGateWay"
+    DependsOn:
+      - NatGateWayPrivateRouteTable
+
+  NatGateWayPrivateSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref NatGateWaySubnet
+      RouteTableId: !Ref NatGateWayPrivateRouteTable
+
+
+Outputs: #Outputing the ID of the EC2 and it Public IP 
+  OutputMyEC2Instance:
+    Description: The ID of the Instance
+    Value: !Ref MyEC2Instance
+    Export:
+      Name: !Sub "${AWS::StackName}-MyEC2Instance"
+
+  OutputForNatGatewayEC2Instance:
+    Description: The ID of the Instance
+    Value: !Ref MyEC2Instance
+    Export:
+      Name: !Sub "${AWS::StackName}-NatGatewayEC2Instance"
+
+  PublicIp:
+    Description: MyEC2Instance Public IP
+    Value: !GetAtt MyEC2Instance.PublicIp
+    # Export:
+    #   Name: !GetAtt MyEIP.PublicIp

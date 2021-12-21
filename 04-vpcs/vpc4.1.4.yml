@@ -8,15 +8,11 @@ Parameters:
     Type: String 
   KeyPair:
     Description: Key Value Pair
-    Type: String
-    Default: "paschalonor"
-  # VPCID:
-  #   Description: The VPC ID
-  #   Type: String
-  #   Default: !ImportValue "Paschal-Onor-VPCID"
-Resources:
-  MyEC2Instance:
+    Type: String #AWS::EC2::KeyPair::KeyName
 
+
+Resources:
+  MyEC2Instance: 
     Type: AWS::EC2::Instance
     Properties: 
       ImageId: !Ref LatestAMIID
@@ -27,8 +23,8 @@ Resources:
       NetworkInterfaces: 
         - AssociatePublicIpAddress: "true"
           DeviceIndex: "0"
-          # GroupSet: #importing the vpc id
-          #   - !ImportValue "Paschal-Onor-VPCID"
+          GroupSet: #importing the vpc id
+            - !ImportValue "Paschal-Onor-VPCID"
           SubnetId: 
             !ImportValue "Paschal-Onor-PrivateSubnet"
       Tags: #adding tags
@@ -43,9 +39,9 @@ Outputs: #Outputing the ID of the EC2 and it Public IP
     Export:
       Name: !Sub "${AWS::StackName}-MyEC2Instance"
 
-  PublicIp:
-    Description: MyEC2Instance Public IP
-    Value: !GetAtt MyEC2Instance.PublicIp
-    Export:
-      Name: !Sub "${AWS::StackName}-PublicIp"
+  # PublicIp:
+  #   Description: MyEC2Instance Public IP
+  #   Value: !GetAtt MyEC2Instance.PublicIp
+  #   Export:
+  #     Name: !Sub "${AWS::StackName}-PublicIp"
 

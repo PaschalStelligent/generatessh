@@ -21,20 +21,23 @@ Parameters:
 
 Resources:
   MyEC2Instance:
-
     Type: AWS::EC2::Instance
     Properties: 
       ImageId: !Ref LatestAMIID
       KeyName: !Ref KeyPair
       InstanceType: !Ref EC2InstanceType
-      NetworkInterfaces: 
-        - AssociatePublicIpAddress: "true"
-          DeviceIndex: "0"
-          SubnetId: 
-            !ImportValue "Paschal-Onor-PrivateSubnet"
+      # NetworkInterfaces: 
+      #   - AssociatePublicIpAddress: "true"
+      #     DeviceIndex: "0"
+      SubnetId: 
+        !ImportValue "Paschal-Onor-PrivateSubnet"
       Tags: #adding tags
         - Key: User
           Value: paschal.onor.labs
+      SecurityGroupIds:
+        - !Ref SSHSecurityGroup
+    DependsOn: SSHSecurityGroup
+
 
   SSHSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -63,9 +66,5 @@ Outputs: #Outputing the ID of the EC2 and it Public IP
     Export:
       Name: !Sub "${AWS::StackName}-MyEC2Instance"
 
-  PublicIp:
-    Description: MyEC2Instance Public IP
-    Value: !GetAtt MyEC2Instance.PublicIp
-    Export:
-      Name: !Sub "${AWS::StackName}-PublicIp"
+
 
