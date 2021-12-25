@@ -3,10 +3,15 @@ Parameters:
   UbuntuAMI:
     Type: "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>"
     Default: '/aws/service/canonical/ubuntu/server/20.04/stable/current/amd64/hvm/ebs-gp2/ami-id'
-  VPCID:
-    Type: 'AWS::EC2::VPC::Id'
-  SubnetID:
-    Type: 'AWS::EC2::Subnet::Id'
+  
+  # VPCID:
+  #   Type: 'AWS::EC2::VPC::Id'
+  #   Default: !ImportValue "Paschal-Onor-VPCID"
+  
+  # SubnetID:
+  #   Type: 'AWS::EC2::Subnet::Id'
+  #   Default: !ImportValue Paschal-Onor-PrivateSubnet
+
 Resources:
   LaunchTemplate:
     Type: AWS::EC2::LaunchTemplate
@@ -20,7 +25,7 @@ Resources:
         NetworkInterfaces:
           - DeviceIndex: 0
             AssociatePublicIpAddress: True
-            SubnetId: !Ref SubnetID
+            SubnetId: !ImportValue Paschal-Onor-PrivateSubnet
         UserData:
           Fn::Base64: !Sub |
             #!/bin/bash -xe
@@ -37,7 +42,7 @@ Resources:
         Version: "1"
     CreationPolicy:
       ResourceSignal:
-        Timeout: PT5M
+        Timeout: PT15M
         Count: '1'
     Metadata:
       AWS::CloudFormation::Init:
@@ -56,11 +61,12 @@ Resources:
         config:
           files:
             /opt/aws/amazon-cloudwatch-agent/amazon-cloudwatch-agent.json:
-              # Add your configuration file here
+              CloudWatchAgentConfig.json
         launch:
           commands:
             launchCloudwatch:
-              command: /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/opt/aws/amazon-cloudwatch-agent/amazon-cloudwatch-agent.json -s
+              command: /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/opt/aws/amazon-cloudwatch-agent/amazon-cloudwatch-agent.json -s  
+  
   InstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
@@ -86,4 +92,4 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: 'Stelligent-U 08 CloudWatch'
-      VpcId: !Ref VPCID
+      VpcId: !ImportValue "Paschal-Onor-VPCID"
