@@ -1,1 +1,3 @@
 aws ec2 describe-instances  --instance-ids i-0ba2990b7bee7f4ad
+
+aws cloudformation describe-stack-events --stack-name Paschal-Onor-Lab5 --region us-east-1 --profile labs-mfa   
