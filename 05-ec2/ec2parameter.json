@@ -1,0 +1,15 @@
+[
+     {
+         "ParameterKey": "User",
+         "ParameterValue": "paschal.onor.labs"
+     },
+     {
+         "ParameterKey": "InstanceType",
+         "ParameterValue": "t2.micro"
+     },
+     {
+         "ParameterKey": "AMI",
+         "ParameterValue": "ami-0b0ea68c435eb488d"
+     }
+     
+ ]

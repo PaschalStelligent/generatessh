@@ -1,0 +1,1 @@
+aws ec2 describe-instances  --instance-ids i-0ba2990b7bee7f4ad
