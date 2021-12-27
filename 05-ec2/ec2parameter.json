@@ -8,7 +8,11 @@
          "ParameterValue": "t2.micro"
      },
      {
-         "ParameterKey": "AMI",
+         "ParameterKey": "LinuxAMI",
          "ParameterValue": "ami-027b3102a9753d58d"
-     }  
+     },
+     {
+        "ParameterKey": "WindowsAMI",
+        "ParameterValue": "ami-0b0ea68c435eb488d"
+    }   
  ]

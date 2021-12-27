@@ -9,7 +9,9 @@ Parameters:
     Description: Key Value Pair
     Type: String
     Default: "paschalonor"
-  AMI:
+  LinuxAMI:
+    Type: AWS::EC2::Image::Id
+  WindowsAMI:
     Type: AWS::EC2::Image::Id
 
 Resources:
@@ -37,14 +39,14 @@ Resources:
   FirstEc2:
      Type: AWS::EC2::Instance
      Properties: 
-       ImageId: !Ref AMI
+       ImageId: !Ref LinuxAMI
        LaunchTemplate: 
          LaunchTemplateId: !Ref LaunchTemplate
          Version: 1
   SecondEc2:
     Type: AWS::EC2::Instance
     Properties: 
-      ImageId:  !Ref AMI
+      ImageId:  !Ref WindowsAMI
       LaunchTemplate: 
         LaunchTemplateId: !Ref LaunchTemplate
         Version: 1
