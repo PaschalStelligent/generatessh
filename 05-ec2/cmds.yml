@@ -1,3 +1,5 @@
 aws ec2 describe-instances  --instance-ids i-0ba2990b7bee7f4ad
 
-aws cloudformation describe-stack-events --stack-name Paschal-Onor-Lab5 --region us-east-1 --profile labs-mfa   
+aws cloudformation describe-stack-events --stack-name Paschal-Onor-Lab5 --region us-east-1 --profile labs-mfa  
+
+aws cloudformation describe-stacks --stack-name Paschal-Onor-Lab5  --query "Stacks[0].Outputs[?OutputKey=='MyEIP'].OutputValue" --output text --region us-east-1 --profile labs-mfa
