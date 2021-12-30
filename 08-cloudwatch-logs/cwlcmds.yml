@@ -1,0 +1,4 @@
+aws logs create-log-stream --log-group-name paschal.onor.c9logs --log-stream-name c9.trainings --region us-east-1 --profile labs-mfa
+aws logs describe-log-streams --log-group-name paschal.onor.c9logs --log-stream-name-prefix c9.trainings --region us-east-1 --profile labs-mfa
+
+

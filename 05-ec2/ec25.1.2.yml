@@ -1,0 +1,52 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: This is a CFN template to create VPCs for Lab 5.
+Parameters:
+  User:
+    Type: String
+  InstanceType:
+    Type: String
+  KeyPair:
+    Description: Key Value Pair
+    Type: String
+    Default: "paschalonor"
+  LinuxAMI:
+    Type: AWS::EC2::Image::Id
+  WindowsAMI:
+    Type: AWS::EC2::Image::Id
+
+Resources:
+  LaunchTemplate:
+     Type: AWS::EC2::LaunchTemplate
+     Properties: 
+       LaunchTemplateData: 
+         InstanceType: !Ref InstanceType
+         KeyName: !Ref KeyPair
+         TagSpecifications: 
+           - ResourceType: instance
+             Tags: 
+               - Key: user
+                 Value: !Ref User
+               - Key: Name
+                 Value: !Ref User
+       LaunchTemplateName: !Ref User
+       TagSpecifications: 
+         - ResourceType: launch-template
+           Tags: 
+             - Key: user
+               Value: !Ref User
+            #  - Key: Name
+            #    Value: !Ref User 
+  FirstEc2:
+     Type: AWS::EC2::Instance
+     Properties: 
+       ImageId: !Ref LinuxAMI
+       LaunchTemplate: 
+         LaunchTemplateId: !Ref LaunchTemplate
+         Version: 1
+  SecondEc2:
+    Type: AWS::EC2::Instance
+    Properties: 
+      ImageId:  !Ref WindowsAMI
+      LaunchTemplate: 
+        LaunchTemplateId: !Ref LaunchTemplate
+        Version: 1
