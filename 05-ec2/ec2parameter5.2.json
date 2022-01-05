@@ -5,10 +5,10 @@
     },
     {
         "ParameterKey": "InstanceType",
-        "ParameterValue": "t2.micro"
+        "ParameterValue": "t3.micro"
     },
     {
         "ParameterKey": "LinuxAMI",
-        "ParameterValue": "ami-027b3102a9753d58d"
+        "ParameterValue": "ami-07d02ee1eeb0c996c"
     } 
 ]

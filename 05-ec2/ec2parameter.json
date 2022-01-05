@@ -9,10 +9,14 @@
      },
      {
          "ParameterKey": "LinuxAMI",
-         "ParameterValue": "ami-027b3102a9753d58d"
+         "ParameterValue": "ami-07d02ee1eeb0c996c"
      },
      {
         "ParameterKey": "WindowsAMI",
         "ParameterValue": "ami-0b0ea68c435eb488d"
+     },
+     {
+        "ParameterKey": "Name",
+        "ParameterValue": "paschal.onor.labs"
     }   
  ]

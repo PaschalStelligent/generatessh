@@ -3,6 +3,8 @@ Description: This is a CFN template to create VPCs for Lab 5.
 Parameters:
   User:
     Type: String
+  Name:
+    Type: String
   InstanceType:
     Type: String
   KeyPair:
@@ -27,7 +29,7 @@ Resources:
                - Key: user
                  Value: !Ref User
                - Key: Name
-                 Value: !Ref User
+                 Value: !Ref Name
        LaunchTemplateName: !Ref User
        TagSpecifications: 
          - ResourceType: launch-template
@@ -43,6 +45,7 @@ Resources:
        LaunchTemplate: 
          LaunchTemplateId: !Ref LaunchTemplate
          Version: 1
+
   SecondEc2:
     Type: AWS::EC2::Instance
     Properties: 
@@ -50,3 +53,23 @@ Resources:
       LaunchTemplate: 
         LaunchTemplateId: !Ref LaunchTemplate
         Version: 1
+    
+
+Outputs: #The Launch Template 
+  LaunchTemplate:
+    Description: The Launch Template
+    Value: !Ref LaunchTemplate
+    Export:
+      Name: !Sub "${AWS::StackName}-LaunchTemplate"
+
+  FirstEc2:
+    Description: The ID of the 1st Instance
+    Value: !Ref FirstEc2
+    Export:
+      Name: !Sub "${AWS::StackName}-FirstEc2"
+
+  SecondEc2:
+    Description: The ID of the 2nd Instance
+    Value: !Ref SecondEc2
+    Export:
+      Name: !Sub "${AWS::StackName}-SecondEc2"
