@@ -80,7 +80,7 @@ Resources:
     Properties:
       AllocationId: !GetAtt NatGateWayEIP.AllocationId
       SubnetId:
-        !ImportValue "Paschal-Onor-PrivateSubnet"
+        !Ref myPrivateSubnet
       Tags:
         - Key: Name
           Value: Paschal-Onor-NGW-Subnet
