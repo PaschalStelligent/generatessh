@@ -1,0 +1,120 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: This is a CFN template to create EC2 for Lab 5.
+
+Parameters:
+  User:
+    Type: String
+  InstanceType:
+    Type: String
+  KeyPair:
+    Description: Key Value Pair
+    Type: String
+    Default: "paschalonor"
+  LinuxAMI:
+    Type: AWS::EC2::Image::Id
+  SSHLocation:
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
+    ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
+    Default: 73.122.232.184/32
+    Description: The IP address range that can be used to access the web server using SSH.
+    MaxLength: '18'
+    MinLength: '9'
+    Type: String
+
+
+Resources:
+  LaunchTemplate:
+     Type: AWS::EC2::LaunchTemplate
+     Properties: 
+       LaunchTemplateData: 
+         InstanceType: !Ref InstanceType
+         KeyName: !Ref KeyPair
+         ImageId: !Ref LinuxAMI
+         NetworkInterfaces: 
+          - DeviceIndex: 0
+            SubnetId: !ImportValue Paschal-Onor-Ec2-PrivateSubnet
+            Groups: 
+              - !Ref ASGSSHSecurityGroup
+         TagSpecifications: 
+           - ResourceType: instance
+             Tags: 
+               - Key: user
+                 Value: !Ref User
+       LaunchTemplateName: !Ref User
+       TagSpecifications: 
+         - ResourceType: launch-template
+           Tags: 
+             - Key: user
+               Value: !Ref User
+             - Key: Name
+               Value: !Ref User
+
+
+  ASGSSHSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: SSH Security Group
+      VpcId: !ImportValue Paschal-Onor-Ec2-VPCID
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: !Ref SSHLocation
+      - IpProtocol: icmp
+        FromPort: 8
+        ToPort: 0
+        CidrIp: !Ref SSHLocation
+      SecurityGroupEgress:
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: !Ref SSHLocation
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: icmp
+        FromPort: 8
+        ToPort: 0
+        CidrIp: !Ref SSHLocation
+
+
+
+
+  # myASGLaunchConfig: 
+  #   Type: AWS::AutoScaling::LaunchConfiguration
+  #   Properties:
+  #     ImageId: !Ref LinuxAMI
+  #     SecurityGroups: 
+  #       - !Ref PaschalSSHSecurityGroup
+  #     InstanceType: !Ref InstanceType
+  #     IamInstanceProfile: !Ref InstanceProfile
+
+  myASG:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      MinSize: '1'
+      MaxSize: '4'
+      DesiredCapacity: '2'
+      LaunchTemplate:
+        LaunchTemplateId: !Ref LaunchTemplate
+        Version: !GetAtt LaunchTemplate.LatestVersionNumber
+      VPCZoneIdentifier: 
+        - !ImportValue Paschal-Onor-Ec2-PrivateSubnet
+      Tags:
+        - Key: Name
+          Value: !Ref User
+          PropagateAtLaunch: "true"
+        - Key: user
+          Value: !Ref User
+          PropagateAtLaunch: "false"
+    UpdatePolicy:
+      AutoScalingReplacingUpdate:
+        WillReplace: True
+
+Outputs:
+  LaunchTemplate:
+    Description: The Launch Template
+    Value: !Ref LaunchTemplate
+    Export:
+      Name: !Sub "${AWS::StackName}-LaunchTemplate"
