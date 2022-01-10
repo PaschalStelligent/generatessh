@@ -84,7 +84,7 @@ Resources:
      Type: AWS::ElasticLoadBalancingV2::TargetGroup
      Properties: 
        HealthCheckEnabled: True
-       HealthCheckPath: /BADindex.html
+       HealthCheckPath: /index.html
        Port: 80
        Protocol: HTTP
        Tags:  
