@@ -3,8 +3,11 @@ Parameters:
   VpcCidr:
     Description: Please enter the IP Range (CIDR Notation) for this private subnet
     Type: String
-  PrivateSubnetCidr:
-    Default: 10.0.0.0/24
+  PublicSubnetCidr:
+    Description: Please enter the IP Range (CIDR Notation) for this private subnet
+    Type: String
+
+  PublicSubnetCidr1:
     Description: Please enter the IP Range (CIDR Notation) for this private subnet
     Type: String
 
@@ -16,21 +19,32 @@ Resources:
       EnableDnsHostnames: true
       EnableDnsSupport: true
       InstanceTenancy: default
-      # Ipv4IpamPoolId: 
-      # Ipv4NetmaskLength: 
       Tags: 
-        - Key: User
+        - Key: Name
           Value: paschal.onor.labs
-  myPrivateSubnet:
+
+  Subnet1:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref PaschalVPC
-      CidrBlock: !Ref PrivateSubnetCidr
+      CidrBlock: !Ref PublicSubnetCidr
       AvailabilityZone: !Select [0, !GetAZs '' ]
-      MapPublicIpOnLaunch: false
+      MapPublicIpOnLaunch: true
       Tags:
-      - Key: User
-        Value: paschal.onor.labs Private Subnet 1
+      - Key: Name
+        Value: paschal.onor.labs Public Subnet 1
+
+  Subnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref PaschalVPC
+      CidrBlock: !Ref PublicSubnetCidr1
+      AvailabilityZone: !Select [1, !GetAZs '' ]
+      MapPublicIpOnLaunch: true
+      Tags:
+      - Key: Name
+        Value: paschal.onor.labs Public Subnet 2
+
 
   myInternetGateway:
     Type: AWS::EC2::InternetGateway
@@ -45,27 +59,33 @@ Resources:
       InternetGatewayId: !Ref myInternetGateway
       VpcId: !Ref PaschalVPC
 
-  myPrivateRouteTable:
+  myPublicRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref PaschalVPC
       Tags:
       - Key: User
-        Value: paschal.onor.labs Private Route Table
+        Value: paschal.onor.labs Public Route Table
       
-  myPrivateRoute:
+  myPublicRoute:
     Type: AWS::EC2::Route
     # DependsOn: !Ref myInternetGateway
     Properties:
-       RouteTableId: !Ref myPrivateRouteTable
+       RouteTableId: !Ref myPublicRouteTable
        DestinationCidrBlock: 0.0.0.0/0
        GatewayId: !Ref myInternetGateway
   
-  myPrivateSubnetRouteTableAssociation:
+  myPublicSubnetRouteTableAssociation1:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
-      SubnetId: !Ref myPrivateSubnet
-      RouteTableId: !Ref myPrivateRouteTable
+      SubnetId: !Ref Subnet1
+      RouteTableId: !Ref myPublicRouteTable
+
+  myPublicSubnetRouteTableAssociation2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref Subnet2
+      RouteTableId: !Ref myPublicRouteTable
 
   NatGateWayEIP:
     Type: AWS::EC2::EIP
@@ -80,7 +100,8 @@ Resources:
     Properties:
       AllocationId: !GetAtt NatGateWayEIP.AllocationId
       SubnetId:
-        !Ref myPrivateSubnet
+        !Ref Subnet1
+        # !Ref Subnet2
       Tags:
         - Key: Name
           Value: Paschal-Onor-NGW-Subnet
@@ -92,11 +113,16 @@ Outputs:
     Value: !Ref PaschalVPC
     Export:
       Name: !Sub "${AWS::StackName}-VPCID"
-  OutputFormyPrivateSubnetId:
-    Description: "my Private Subnet"
-    Value: !Ref myPrivateSubnet
+  OutputFormyPublicSubnetId1:
+    Description: "my Public Subnet"
+    Value: !Ref Subnet1
     Export:
-      Name: !Sub "${AWS::StackName}-PrivateSubnet"
+      Name: !Sub "${AWS::StackName}-Subnet1"
+  OutputFormyPublicSubnetId2:
+    Description: "my Public Subnet"
+    Value: !Ref Subnet2
+    Export:
+      Name: !Sub "${AWS::StackName}-Subnet2"
   OutputFormyNatGateWayId:
     Description: "My Nat GateWay Id"
     Value: !Ref NatGateWay
