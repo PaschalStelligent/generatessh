@@ -7,3 +7,10 @@ aws --profile $PROFILE --region $REGION acm import-certificate --certificate fil
 STACKNAME="Paschal-Onor-ALB"
 REGION="us-east-1"
 PROFILE="labs-mfa"
+
+
+aws cloudformation update-stack --stack-name Paschal-Onor-ALB --template-body file://$WDIR/asg_example.yaml --parameters file://$WDIR/ALBparameter.json --region us-east-1 --profile labs-mfa --capabilities CAPABILITY_NAMED_IAM
+
+rm -rf ./certificate* ./key.pem
+
+aws cloudformation delete-stack --stack-name Paschal-Onor-ALB --region us-east-1 --profile labs-mfa
