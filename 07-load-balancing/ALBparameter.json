@@ -1,0 +1,6 @@
+[
+    {
+      "ParameterKey": "TLSCert",
+      "ParameterValue": "arn:aws:acm:us-east-1:324320755747:certificate/e4e8cca4-f42a-4fee-88c5-641991b9f7d8"
+    }
+]
