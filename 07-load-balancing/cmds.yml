@@ -1,16 +1,16 @@
-openssl req -newkey rsa:2048 -nodes -keyout key.pem -x509 -days 365 -out certificate.pem -subj "/C=''/ST=''/L=''/O=''/OU=''/CN=*.amazonaws.com"
+# openssl req -newkey rsa:2048 -nodes -keyout key.pem -x509 -days 365 -out certificate.pem -subj "/C=''/ST=''/L=''/O=''/OU=''/CN=*.amazonaws.com"
 
-openssl pkcs12 -inkey key.pem -in certificate.pem -export -out certificate.p12
+# openssl pkcs12 -inkey key.pem -in certificate.pem -export -out certificate.p12
 
-aws --profile $PROFILE --region $REGION acm import-certificate --certificate fileb://Certificate.pem --private-key fileb://Key.pem --tags Key=Name,Value=$STACKNAME | jq -r '.CertificateArn'
+# aws --profile $PROFILE --region $REGION acm import-certificate --certificate fileb://Certificate.pem --private-key fileb://Key.pem --tags Key=Name,Value=$STACKNAME | jq -r '.CertificateArn'
 
-STACKNAME="Paschal-Onor-ALB"
-REGION="us-east-1"
-PROFILE="labs-mfa"
+# STACKNAME="Paschal-Onor-ALB"
+# REGION="us-east-1"
+# PROFILE="labs-mfa"
 
 
-aws cloudformation update-stack --stack-name Paschal-Onor-ALB --template-body file://$WDIR/asg_example.yaml --parameters file://$WDIR/ALBparameter.json --region us-east-1 --profile labs-mfa --capabilities CAPABILITY_NAMED_IAM
+# aws cloudformation update-stack --stack-name Paschal-Onor-ALB --template-body file://$WDIR/asg_example.yaml --parameters file://$WDIR/ALBparameter.json --region us-east-1 --profile labs-mfa --capabilities CAPABILITY_NAMED_IAM
 
-rm -rf ./certificate* ./key.pem
+# rm -rf ./certificate* ./key.pem
 
-aws cloudformation delete-stack --stack-name Paschal-Onor-ALB --region us-east-1 --profile labs-mfa
+# aws cloudformation delete-stack --stack-name Paschal-Onor-ALB --region us-east-1 --profile labs-mfa
