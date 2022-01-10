@@ -1,11 +1,11 @@
 [
     {
         "ParameterKey": "PrivateSubnetCidr",
-        "ParameterValue": "10.0.1.0/24"
+        "ParameterValue": "10.0.84.0/27"
     },
     {
         "ParameterKey": "LatestAMIID",
-        "ParameterValue": "ami-061ac2e015473fbe2"
+        "ParameterValue": "ami-07d02ee1eeb0c996c"
     },
     {
         "ParameterKey": "EC2InstanceType",

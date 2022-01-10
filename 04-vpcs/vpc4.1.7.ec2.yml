@@ -31,7 +31,7 @@ Resources:
       KeyName: !Ref KeyPair
       InstanceType: !Ref EC2InstanceType
       SubnetId: 
-        !ImportValue Paschal-Onor-PrivateSubnet
+        !ImportValue Paschal-Onor-Ec2-PrivateSubnet
       Tags: #adding tags
         - Key: User
           Value: paschal.onor.labs
@@ -48,7 +48,7 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: SSH and icmp Security Group
-      VpcId: !ImportValue "Paschal-Onor-VPCID"
+      VpcId: !ImportValue "Paschal-Onor-Ec2-VPCID"
       SecurityGroupIngress:
       - IpProtocol: tcp
         FromPort: 22
@@ -80,7 +80,7 @@ Resources:
   NatGateWaySubnet:
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId: !ImportValue "Paschal-Onor-VPCID"
+      VpcId: !ImportValue "Paschal-Onor-Ec2-VPCID"
       CidrBlock: !Ref PrivateSubnetCidr
       AvailabilityZone: !Select [0, !GetAZs '' ]
       MapPublicIpOnLaunch: true
@@ -92,7 +92,7 @@ Resources:
   NatGateWayPrivateRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
-      VpcId: !ImportValue "Paschal-Onor-VPCID"
+      VpcId: !ImportValue "Paschal-Onor-Ec2-VPCID"
       Tags:
       - Key: User
         Value: paschal.onor.labs Private Route Table
@@ -102,7 +102,7 @@ Resources:
     Properties:
        RouteTableId: !Ref NatGateWayPrivateRouteTable
        DestinationCidrBlock: 0.0.0.0/0
-       NatGatewayId: !ImportValue "Paschal-Onor-NatGateWay"
+       NatGatewayId: !ImportValue "Paschal-Onor-Ec2-NatGateWay"
     DependsOn:
       - NatGateWayPrivateRouteTable
 
