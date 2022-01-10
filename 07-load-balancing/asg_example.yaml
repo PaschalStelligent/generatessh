@@ -1,4 +1,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  TLSCert:
+    Type: String
 Resources:
   WebServerAsg:
     Type: 'AWS::AutoScaling::AutoScalingGroup'
@@ -84,13 +87,10 @@ Resources:
      Type: AWS::ElasticLoadBalancingV2::TargetGroup
      Properties: 
        HealthCheckEnabled: True
-       HealthCheckPath: /BADindex.html
-       HealthCheckIntervalSeconds: 20
+       HealthCheckPath: /index.html
+       HealthCheckIntervalSeconds: 30
        HealthyThresholdCount: 2
        UnhealthyThresholdCount: 3
-       TargetGroupAttributes: 
-         - Key: deregistration_delay.timeout_seconds
-           Value: 20
        Port: 80
        Protocol: HTTP
        Tags:  
@@ -118,6 +118,10 @@ Resources:
            FromPort: 80
            ToPort: 80
            CidrIp: 0.0.0.0/0
+         - IpProtocol: tcp
+           FromPort: 443
+           ToPort: 443
+           CidrIp: 0.0.0.0/0
        SecurityGroupEgress:
          - IpProtocol: tcp
            FromPort: 22
@@ -131,6 +135,10 @@ Resources:
            FromPort: 8
            ToPort: 0
            CidrIp: 0.0.0.0/0 
+         - IpProtocol: tcp
+           FromPort: 443
+           ToPort: 443
+           CidrIp: 0.0.0.0/0
        Tags:  
            - Key: user
              Value: paschal.onor.labs
@@ -152,14 +160,17 @@ Resources:
            Value: paschal.onor.labs
 
        Type: application
-  ALBListener:
+  ALBListener2:
      Type: AWS::ElasticLoadBalancingV2::Listener
      Properties: 
-       DefaultActions:
+       DefaultActions: 
          - TargetGroupArn: !Ref TargetGroup
            Type: forward
        LoadBalancerArn: !Ref ALB
-       Port: 80
-       Protocol: HTTP
+       Port: 443
+       Protocol: HTTPS
+       SslPolicy: ELBSecurityPolicy-FS-1-2-Res-2020-10
+       Certificates:
+         - CertificateArn: !Ref TLSCert
 
 
