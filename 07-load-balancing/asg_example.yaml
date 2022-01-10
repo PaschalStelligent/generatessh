@@ -5,23 +5,34 @@ Resources:
     Properties:
       AutoScalingGroupName: 'AutomationBoxes'
       VPCZoneIdentifier:
-        - 'REPLACE_WITH_PUBLIC_SUBNET_IN_AZ1' # Find public subnets within the default VPC or 
-        - 'REPLACE_WITH_PUBLIC_SUBNET_IN_AZ2'
+        - !ImportValue Paschal-Onor-Vpc-Subnet1 # Find public subnets within the default VPC or 
+        - !ImportValue Paschal-Onor-Vpc-Subnet2
       DesiredCapacity: '3'
       HealthCheckType: 'ELB'
       HealthCheckGracePeriod: 30 
       LaunchConfigurationName: !Ref WebServersLC
       MaxSize: '3'
       MinSize: '3'
+      TargetGroupARNs:
+         - !Ref TargetGroup
+      Tags:  
+        - Key: user
+          Value: paschal.onor.labs
+          PropagateAtLaunch: "true"
+        - Key: Name
+          Value: paschal.onor.labs
+          PropagateAtLaunch: "true"
+
+
 
   WebServersLC:
     Type: 'AWS::AutoScaling::LaunchConfiguration'
     Properties:
-      ImageId: 'REPLACE_WITH_AMAZON_LINUXV1_AMI'
+      ImageId: 'ami-0ed9277fb7eb570c9'
       InstanceType: 't2.micro'
-      LaunchConfigurationName: 'SimpleWebServerLC'
+      LaunchConfigurationName: 'SimpleWebServerLC-Paschal'
       SecurityGroups:
-        - 'REPLACE'
+        - !GetAtt SecurityGroup.GroupId
       UserData: 
         Fn::Base64:
           Fn::Sub: |
@@ -33,7 +44,7 @@ Resources:
             /opt/aws/bin/cfn-init -v \
               --stack ${AWS::StackName} \
               --resource WebServersLC \
-              --configsets All \
+              --configsets ascending \
               --region ${AWS::Region}
 
             # Signal the status from cfn-init
@@ -47,7 +58,14 @@ Resources:
         configSets:
           All:
             - ConfigureStelligentProject
-        ConfigureStelligentProject:
+        ConfigureStelligentProject-Paschal1:
+           packages:
+             amazon-linux-extras:
+               nginx1: []
+           commands:
+             command:
+               command: amazon-linux-extras enable nginx1; yum clean metadata
+        ConfigureStelligentProject-Paschal2:
           packages:
             yum:
               nginx: []
@@ -62,3 +80,80 @@ Resources:
               nginx:
                 enabled: 'true'
                 ensureRunning: 'true'
+  TargetGroup:
+     Type: AWS::ElasticLoadBalancingV2::TargetGroup
+     Properties: 
+       HealthCheckEnabled: True
+       HealthCheckPath: /BADindex.html
+       Port: 80
+       Protocol: HTTP
+       Tags:  
+         - Key: user
+           Value: paschal.onor.labs
+         - Key: Name
+           Value: paschal.onor.labs
+       VpcId: !ImportValue Paschal-Onor-Vpc-VPCID
+
+  SecurityGroup:
+     Type: AWS::EC2::SecurityGroup
+     Properties: 
+       VpcId: !ImportValue Paschal-Onor-Vpc-VPCID
+       GroupDescription: SecurityGroup
+       SecurityGroupIngress:
+         - IpProtocol: icmp
+           FromPort: 8
+           ToPort: 0
+           CidrIp: 0.0.0.0/0 
+         - IpProtocol: tcp
+           FromPort: 22
+           ToPort: 22
+           CidrIp: 0.0.0.0/0 
+         - IpProtocol: tcp
+           FromPort: 80
+           ToPort: 80
+           CidrIp: 0.0.0.0/0
+       SecurityGroupEgress:
+         - IpProtocol: tcp
+           FromPort: 22
+           ToPort: 22
+           CidrIp: 0.0.0.0/0 
+         - IpProtocol: tcp
+           FromPort: 80
+           ToPort: 80
+           CidrIp: 0.0.0.0/0
+         - IpProtocol: icmp
+           FromPort: 8
+           ToPort: 0
+           CidrIp: 0.0.0.0/0 
+       Tags:  
+           - Key: user
+             Value: paschal.onor.labs
+           - Key: Name
+             Value: paschal.onor.labs
+
+  ALB:
+     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+     Properties:
+       SecurityGroups: 
+         - !GetAtt SecurityGroup.GroupId
+       Subnets: 
+         - !ImportValue Paschal-Onor-Vpc-Subnet1
+         - !ImportValue Paschal-Onor-Vpc-Subnet2
+       Tags: 
+         - Key: user
+           Value: paschal.onor.labs
+         - Key: Name
+           Value: paschal.onor.labs
+
+       Type: application
+  ALBListener:
+     Type: AWS::ElasticLoadBalancingV2::Listener
+     Properties: 
+       DefaultActions:
+         - TargetGroupArn: !Ref TargetGroup
+           Type: forward
+       LoadBalancerArn: !Ref ALB
+       Port: 80
+       Protocol: HTTP
+
+
