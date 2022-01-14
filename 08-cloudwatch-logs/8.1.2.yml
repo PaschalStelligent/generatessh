@@ -6,14 +6,11 @@ Parameters:
   KeyPair:
     Description: Key Value Pair
     Type: String
-    Default: "paschalonorec2" 
-  # VPCID:
-  #   Type: 'AWS::EC2::VPC::Id'
-  #   Default: !ImportValue "Paschal-Onor-VPCID"
-  
-  # SubnetID:
-  #   Type: 'AWS::EC2::Subnet::Id'
-  #   Default: !ImportValue Paschal-Onor-PrivateSubnet
+    Default: "paschalonor" 
+  User:
+    Type: String
+  Name:
+    Type: String
 
   SSHLocation:
     AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
@@ -38,7 +35,9 @@ Resources:
         NetworkInterfaces:
           - DeviceIndex: 0
             AssociatePublicIpAddress: True
-            SubnetId: !ImportValue Paschal-Onor-Vpc-PrivateSubnet
+            SubnetId: !ImportValue Paschal-Onor-VPC-Subnet1
+            Groups: 
+              - !Ref SecurityGroup
         # UserData:
         #   Fn::Base64: !Sub |
         #     #!/bin/bash -xe
@@ -47,38 +46,77 @@ Resources:
         #     python3 -m pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-2.0-9.tar.gz
         #     /usr/local/bin/cfn-init -v --stack ${AWS::StackName} --resource EC2 --configsets default --region ${AWS::Region}
         #     /usr/local/bin/cfn-signal --exit-code $? --stack ${AWS::StackName} --resource EC2 --region ${AWS::Region}
-  EC2:
+  PaschalEC2:
     Type: AWS::EC2::Instance
     Properties:
+      Tags:
+       - Key: user
+         Value: !Ref User
+       - Key: Name
+         Value: !Ref Name
       LaunchTemplate:
         LaunchTemplateId: !Ref LaunchTemplate
         Version: "1"
-    CreationPolicy:
-      ResourceSignal:
-        Timeout: PT5M
-        Count: '1'
-    Metadata:
-      AWS::CloudFormation::Init:
-        configSets:
-          default:
-            - install
-            - config
-            - launch
-        install:
-          sources:
-            /etc/cloudwatchagent: https://s3.amazonaws.com/amazoncloudwatch-agent/linux/amd64/latest/AmazonCloudWatchAgent.zip
-          commands:
-            installCloudwatch:
-              command: ./install.sh
-              cwd: /etc/cloudwatchagent
-        config:
-          files:
-            /opt/aws/amazon-cloudwatch-agent/amazon-cloudwatch-agent.json:
-              CloudWatchAgentConfig.json
-        launch:
-          commands:
-            launchCloudwatch:
-              command: /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/opt/aws/amazon-cloudwatch-agent/amazon-cloudwatch-agent.json -s  
+    # CreationPolicy:
+    #   ResourceSignal:
+    #     Timeout: PT5M
+    #     Count: '1'
+    # Metadata:
+    #   AWS::CloudFormation::Init:
+    #     configSets:
+    #       default:
+    #         - install
+    #         - config
+    #         - launch
+    #     install:
+    #       sources:
+    #         /etc/cloudwatchagent: https://s3.amazonaws.com/amazoncloudwatch-agent/linux/amd64/latest/AmazonCloudWatchAgent.zip
+    #       commands:
+    #         installCloudwatch:
+    #           command: ./install.sh
+    #           cwd: /etc/cloudwatchagent
+    #     config:
+          # files:
+          #   /opt/aws/amazon-cloudwatch-agent/amazon-cloudwatch-agent.json:
+          #     # CloudWatchAgentConfig.json
+          #     content: !Sub |
+          #       {
+          #         "agent": {
+          #           "run_as_user": "root",
+          #           "metrics_collection_interval": 60
+          #         },
+          #         "metrics": {
+          #           "metrics_collected": {
+          #             "collectd": {
+          #               "metrics_aggregation_interval": 60
+          #             },
+          #             "disk": {
+          #               "measurement": [
+          #                 "used_percent"
+          #               ],
+          #               "metrics_collection_interval": 60,
+          #               "resources": [
+          #                 "*"
+          #               ]
+          #             },
+          #             "mem": {
+          #               "measurement": [
+          #                 "mem_used_percent"
+          #               ],
+          #               "metrics_collection_interval": 60
+          #             },
+          #             "statsd": {
+          #               "metrics_aggregation_interval": 60,
+          #               "metrics_collection_interval": 10,
+          #               "service_address": ":8125"
+          #             }
+          #           }
+          #         }
+          #       }
+        # launch:
+        #   commands:
+        #     launchCloudwatch:
+        #       command: /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/opt/aws/amazon-cloudwatch-agent/amazon-cloudwatch-agent.json -s  
   
   InstanceProfile:
     Type: AWS::IAM::InstanceProfile
@@ -101,14 +139,43 @@ Resources:
                 - "ec2.amazonaws.com"
             Action:
               - "sts:AssumeRole"
+
   SecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: 'Stelligent-U 08 CloudWatch'
-      VpcId: !ImportValue "Paschal-Onor-Vpc-VPCID"
-      # GroupDescription: SSH Security Group
+      VpcId: !ImportValue Paschal-Onor-VPC-VPCID
       SecurityGroupIngress:
       - IpProtocol: tcp
         FromPort: 22
         ToPort: 22
+        CidrIp: !Ref SSHLocation
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: !Ref SSHLocation
+      - IpProtocol: tcp
+        FromPort: 443
+        ToPort: 443
+        CidrIp: !Ref SSHLocation
+      - IpProtocol: icmp
+        FromPort: 8
+        ToPort: 0
+        CidrIp: !Ref SSHLocation
+      SecurityGroupEgress:
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: !Ref SSHLocation
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: !Ref SSHLocation
+      - IpProtocol: icmp
+        FromPort: 8
+        ToPort: 0
+        CidrIp: !Ref SSHLocation
+      - IpProtocol: tcp
+        FromPort: 443
+        ToPort: 443
         CidrIp: !Ref SSHLocation
