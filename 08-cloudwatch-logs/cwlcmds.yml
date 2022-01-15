@@ -1,4 +1,44 @@
 aws logs create-log-stream --log-group-name paschal.onor.c9logs --log-stream-name c9.trainings --region us-east-1 --profile labs-mfa
 aws logs describe-log-streams --log-group-name paschal.onor.c9logs --log-stream-name-prefix c9.trainings --region us-east-1 --profile labs-mfa
 
+aws cloudformation create-stack --stack-name Paschal-Onor-Lab8 --template-body file://$WDIR/empty-stack.yml   --region us-east-1 --profile labs-mfa 
 
+aws cloudformation update-stack --region us-east-1 --stack-name Paschal-Onor-Lab8 --template-body file://8.1.2.yml --parameters file://$WDIR/cloudwatchparameter.json --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND
+
+aws logs get-log-events --log-group-name paschal.onor.c9logs --log-stream-name c9.trainings
+
+sudo apt-get update -y
+sudo apt-get install python
+curl https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py -O
+sudo python ./awslogs-agent-setup.py --region us-east-1
+
+cd /etc/systemd/system
+vim awslogs.service
+
+Copy the following content on the awslogs.service file.
+
+[Unit]
+Description=Service for CloudWatch Logs agent
+After=rc-local.service
+
+[Service]
+Type=simple
+Restart=always
+KillMode=process
+TimeoutSec=infinity
+PIDFile=/var/awslogs/state/awslogs.pid
+ExecStart=/var/awslogs/bin/awslogs-agent-launcher.sh --start --background --pidfile $PIDFILE --user awslogs --chuid awslogs &
+
+[Install]
+WantedBy=multi-user.target
+
+
+Now start the agent using the following command.
+systemctl start awslogs.service
+
+To stop and restart, you can use the following commands.
+systemctl stop awslogs.service
+systemctl restart awslogs.service
+
+To enable awslogs service on boot, execute the following command.
+systemctl enable awslogs.service
