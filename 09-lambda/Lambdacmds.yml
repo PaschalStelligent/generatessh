@@ -1,0 +1,7 @@
+# export WDIR=$(PWD)
+
+aws cloudformation create-stack --stack-name Paschal-Onor-Lambda --template-body file://$WDIR/empty-stack.yml   --region us-east-1 --profile labs-mfa 
+
+cfn-tail --region us-east-1 Paschal-Onor-Lambda
+
+aws cloudformation update-stack --region us-east-1 --stack-name Paschal-Onor-Lambda --template-body file://Lambda9.1.2.yml --parameters file://$WDIR/Lambdaparameter.json --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND
