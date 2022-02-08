@@ -17,3 +17,5 @@ aws kms decrypt \
     --output text \
     --query Plaintext | base64 \
     --decode > ExamplePlaintextFile
+
+    gem install aws-sdk
