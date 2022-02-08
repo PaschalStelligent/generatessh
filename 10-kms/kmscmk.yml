@@ -65,3 +65,10 @@ Resources:
     Properties:
       AliasName: alias/exampleAlias
       TargetKeyId: !Ref myMainKey
+
+aws kms encrypt \
+    --key-id e9a8260d-8755-4460-8cab-256c20b98f6a \
+    --plaintext fileb://ExamplePlaintextFile \
+    --output text \
+    --query CiphertextBlob | base64 \
+    --decode > ExampleEncryptedFile

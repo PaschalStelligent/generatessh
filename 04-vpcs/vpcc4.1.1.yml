@@ -32,6 +32,8 @@ Resources:
       - Key: User
         Value: paschal.onor.labs Private Subnet 1
 
+
+
 Outputs:
   OutputForPaschalVPCId:
     Description: "Paschal VPC"
