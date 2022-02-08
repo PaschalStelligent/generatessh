@@ -1,0 +1,8 @@
+aws kms encrypt \
+    --key-id e9a8260d-8755-4460-8cab-256c20b98f6a \
+    --plaintext fileb://plaintext.txt \
+    --output text \
+    --query CiphertextBlob | base64 \
+    --decode > ExampleEncryptedFile \
+    --region us-east-1 \
+    --profile labs-mfa
