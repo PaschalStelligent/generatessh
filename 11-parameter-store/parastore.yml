@@ -1,0 +1,121 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Parameters:
+  User:
+    Type: String
+  Lab:
+    Type: String
+
+  Name:
+    Type: String
+    Default: "Paschal Onor"
+    MinLength: 1
+  Title:
+    Type: String
+    Default: "DevOps Automation Engineer II"
+    MinLength: 1
+  Team:
+    Type: String
+    Default: "Automation Delivery"
+    MinLength: 1
+  Address:
+    Type: String
+    Default: "123 Stelligent Street"
+    MinLength: 1
+  City:
+    Type: String
+    Default: "Atlanta"
+    MinLength: 1
+  state:
+    Type: String
+    Default: "GA"
+    MinLength: 1
+  timezone:
+    Type: String
+    Default: "EST"
+    MinLength: 1
+  startdate:
+    Type: String
+    Default: "11/22"
+    MinLength: 1
+
+Resources:
+  ParameterName:
+    Type: AWS::SSM::Parameter
+    Properties: 
+      Tags:  
+        User: !Ref User
+        Name: !Ref User
+        stelligent-u-lab: !Ref Lab
+      Name: /paschal.onor.labs/stelligent-u/lab11/name
+      Type: String
+      Value: !Ref Name
+  ParameterTitle:
+    Type: AWS::SSM::Parameter
+    Properties: 
+      Tags:  
+        User: !Ref User
+        Name: !Ref User
+        stelligent-u-lab: !Ref Lab
+      Name: /paschal.onor.labs/stelligent-u/lab11/title
+      Type: String
+      Value: !Ref Title
+  ParameterTeam:
+    Type: AWS::SSM::Parameter
+    Properties: 
+      Tags:  
+        User: !Ref User
+        Name: !Ref User
+        stelligent-u-lab: !Ref Lab
+      Name: /paschal.onor.labs/stelligent-u/lab11/team
+      Type: String
+      Value: !Ref Team
+  ParameterAddress:
+    Type: AWS::SSM::Parameter
+    Properties: 
+      Tags:  
+        User: !Ref User
+        Name: !Ref User
+        stelligent-u-lab: !Ref Lab
+      Name: /paschal.onor.labs/stelligent-u/lab11/address
+      Type: String
+      Value: !Ref Address
+  ParameterCity:
+    Type: AWS::SSM::Parameter
+    Properties: 
+      Tags:  
+        User: !Ref User
+        Name: !Ref User
+        stelligent-u-lab: !Ref Lab
+      Name: /paschal.onor.labs/stelligent-u/lab11/city
+      Type: String
+      Value: !Ref City
+  ParameterState:
+    Type: AWS::SSM::Parameter
+    Properties: 
+      Tags:  
+        User: !Ref User
+        Name: !Ref User
+        stelligent-u-lab: !Ref Lab
+      Name: /paschal.onor.labs/stelligent-u/lab11/state
+      Type: String
+      Value: !Ref state
+  ParameterTimezone:
+    Type: AWS::SSM::Parameter
+    Properties: 
+      Tags:  
+        User: !Ref User
+        Name: !Ref User
+        stelligent-u-lab: !Ref Lab
+      Name: /paschal.onor.labs/stelligent-u/lab11/timezone
+      Type: String
+      Value: !Ref timezone
+  Paramstartdate:
+    Type: AWS::SSM::Parameter
+    Properties: 
+      Tags:  
+        User: !Ref User
+        Name: !Ref User
+        stelligent-u-lab: !Ref Lab
+      Name: /paschal.onor.labs/stelligent-u/lab11/start-date
+      Type: String
+      Value: !Ref startdate
