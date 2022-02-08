@@ -1,0 +1,21 @@
+export WDIR=$(PWD)
+aws cloudformation create-stack --stack-name Paschal-Onor-Lab10 --template-body file://$WDIR/empty-stack.yml   --region us-east-1 --profile labs-mfa
+aws cloudformation update-stack --stack-name Paschal-Onor-Lab10 --template-body file://$WDIR/kmscmk.yml --parameters file://$WDIR/kmsparameter.json --region us-east-1 --profile labs-mfa
+export AWS_DEFAULT_REGION=us-east-1
+
+
+aws kms encrypt \                  
+    --key-id e9a8260d-8755-4460-8cab-256c20b98f6a \
+    --plaintext fileb://plaintext.txt \
+    --output text \
+    --query CiphertextBlob | base64 \
+    --decode > ExampleEncryptedFile
+
+aws kms decrypt \
+    --ciphertext-blob fileb://ExampleEncryptedFile \
+    --key-id e9a8260d-8755-4460-8cab-256c20b98f6a \
+    --output text \
+    --query Plaintext | base64 \
+    --decode > ExamplePlaintextFile
+
+    gem install aws-sdk
