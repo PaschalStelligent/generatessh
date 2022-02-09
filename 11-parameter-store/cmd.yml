@@ -4,4 +4,79 @@ aws cloudformation create-stack --stack-name Paschal-Onor-Lab11 --template-body 
 
 aws cloudformation update-stack --stack-name Paschal-Onor-Lab11 --template-body file://$WDIR/parastore.yml --parameters file://$WDIR/parameter.json --region us-east-1 --profile labs-mfa
 
-aws ssm get-parameters-by-path --path /Users/simili-modo/Desktop/generatessh/11-parameter-store --region us-east-1 --profile labs-mfa
+aws ssm get-parameters-by-path --path /paschal.onor.labs/stelligent-u/lab11/ --region us-east-1 --profile labs-mfa
+output:
+{
+    "Parameters": [
+        {
+            "Name": "/paschal.onor.labs/stelligent-u/lab11/address",
+            "Type": "String",
+            "Value": "123 Stelligent Street",
+            "Version": 1,
+            "LastModifiedDate": "2022-02-08T14:51:15.406000-05:00",
+            "ARN": "arn:aws:ssm:us-east-1:324320755747:parameter/paschal.onor.labs/stelligent-u/lab11/address",
+            "DataType": "text"
+        },
+        {
+            "Name": "/paschal.onor.labs/stelligent-u/lab11/city",
+            "Type": "String",
+            "Value": "Atlanta",
+            "Version": 1,
+            "LastModifiedDate": "2022-02-08T14:51:15.348000-05:00",
+            "ARN": "arn:aws:ssm:us-east-1:324320755747:parameter/paschal.onor.labs/stelligent-u/lab11/city",
+            "DataType": "text"
+        },
+        {
+            "Name": "/paschal.onor.labs/stelligent-u/lab11/name",
+            "Type": "String",
+            "Value": "Paschal Onor",
+            "Version": 1,
+            "LastModifiedDate": "2022-02-08T14:51:15.448000-05:00",
+            "ARN": "arn:aws:ssm:us-east-1:324320755747:parameter/paschal.onor.labs/stelligent-u/lab11/name",
+            "DataType": "text"
+        },
+        {
+            "Name": "/paschal.onor.labs/stelligent-u/lab11/start-date",
+            "Type": "String",
+            "Value": "11/22",
+            "Version": 1,
+            "LastModifiedDate": "2022-02-08T14:51:15.280000-05:00",
+            "ARN": "arn:aws:ssm:us-east-1:324320755747:parameter/paschal.onor.labs/stelligent-u/lab11/start-date",
+            "DataType": "text"
+        },
+        {
+            "Name": "/paschal.onor.labs/stelligent-u/lab11/state",
+            "Type": "String",
+            "Value": "GA",
+            "Version": 1,
+            "LastModifiedDate": "2022-02-08T14:51:16.405000-05:00",
+        },
+        {
+            "Name": "/paschal.onor.labs/stelligent-u/lab11/team",
+            "Type": "String",
+            "Value": "Automation Delivery",
+            "Version": 1,
+            "LastModifiedDate": "2022-02-08T14:51:16.461000-05:00",
+            "ARN": "arn:aws:ssm:us-east-1:324320755747:parameter/paschal.onor.labs/stelligent-u/lab11/team",
+            "DataType": "text"
+        },
+        {
+            "Name": "/paschal.onor.labs/stelligent-u/lab11/timezone",
+            "Type": "String",
+            "Value": "EST",
+            "Version": 1,
+            "LastModifiedDate": "2022-02-08T14:51:16.133000-05:00",
+            "ARN": "arn:aws:ssm:us-east-1:324320755747:parameter/paschal.onor.labs/stelligent-u/lab11/timezone",
+            "DataType": "text"
+        },
+        {
+            "Name": "/paschal.onor.labs/stelligent-u/lab11/title",
+            "Type": "String",
+            "Value": "DevOps Automation Engineer II",
+            "Version": 1,
+            "LastModifiedDate": "2022-02-08T14:51:16.095000-05:00",
+            "ARN": "arn:aws:ssm:us-east-1:324320755747:parameter/paschal.onor.labs/stelligent-u/lab11/title",
+            "DataType": "text"
+        }
+    ]
+}
