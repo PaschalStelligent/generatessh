@@ -1,4 +1,7 @@
 export WDIR=$(PWD)
 
 aws cloudformation create-stack --stack-name Paschal-Onor-Lab11 --template-body file://$WDIR/empty-stack.yml   --region us-east-1 --profile labs-mfa
-aws cloudformation update-stack --stack-name Paschal-Onor-Lab10 --template-body file://$WDIR/parastore.yml --parameters file://$WDIR/parameter.json --region us-east-1 --profile labs-mfa
+
+aws cloudformation update-stack --stack-name Paschal-Onor-Lab11 --template-body file://$WDIR/parastore.yml --parameters file://$WDIR/parameter.json --region us-east-1 --profile labs-mfa
+
+aws ssm get-parameters-by-path --path /Users/simili-modo/Desktop/generatessh/11-parameter-store --region us-east-1 --profile labs-mfa
